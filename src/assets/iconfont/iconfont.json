@@ -1,0 +1,72 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "393482",
+      "name": "最小化",
+      "font_class": "zuixiaohua",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "2718732",
+      "name": "手机",
+      "font_class": "shouji",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "4772829",
+      "name": "平台管理—日志审计",
+      "font_class": "pingtaiguanlirizhishenji",
+      "unicode": "e64d",
+      "unicode_decimal": 58957
+    },
+    {
+      "icon_id": "5387522",
+      "name": "关闭",
+      "font_class": "guanbi",
+      "unicode": "eaf2",
+      "unicode_decimal": 60146
+    },
+    {
+      "icon_id": "6246291",
+      "name": "工具",
+      "font_class": "gongju",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "16921549",
+      "name": "关于",
+      "font_class": "guanyu",
+      "unicode": "e7e8",
+      "unicode_decimal": 59368
+    },
+    {
+      "icon_id": "20075895",
+      "name": "夜间",
+      "font_class": "yejian",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
+      "icon_id": "20384887",
+      "name": "apk",
+      "font_class": "apk",
+      "unicode": "ecd8",
+      "unicode_decimal": 60632
+    },
+    {
+      "icon_id": "22903739",
+      "name": "白天模式",
+      "font_class": "baitianmoshi",
+      "unicode": "e769",
+      "unicode_decimal": 59241
+    }
+  ]
+}
