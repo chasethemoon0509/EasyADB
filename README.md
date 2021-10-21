@@ -1,24 +1,14 @@
-# easy-adb
+# easy-adb 项目源码
+- 2021-10-20 环境稳定，正在实现换肤功能
+- 2021-10-21 环境稳定，换肤功能以实现，接下来开始 Aside 侧边栏的开发
 
-## Project setup
+## 安装依赖
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### 编译、启动项目
 ```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
+npm run electron:serve
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

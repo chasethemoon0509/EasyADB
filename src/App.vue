@@ -7,9 +7,8 @@
       <Aside></Aside>
       <!-- router-view 显示区域 -->
       <router-view></router-view>
-      <button>sun</button>
-      <button>night</button>
     </div>
+    <!-- 底部区域 -->
     <Footer></Footer>
   </div>
 </template>
@@ -30,19 +29,16 @@ export default {
 }
 </script>
 
-<style>
-/* 初始化 */
+<style lang="less">
 body {
   margin: 0;
   padding: 0;
   background-color: rgba(0, 0, 0, 0);
 }
 #app {
-  /* rgb(240, 241, 246) */
-  background-color: rgb(240, 241, 246);
-  /* -webkit-app-region: drag; */
+  // 动态样式, 变量 --app-bg-color 表示根组件的背景颜色，有不同的值
+  background: var(--app-bg-color);
 }
-/* 侧边栏和页面区域, flex 布局，使侧边栏和页面在一行显示 */
 #content {
   display: flex;
 }

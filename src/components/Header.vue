@@ -28,12 +28,7 @@
         <i class="iconfont icon-guanbi" id="close" @click="closeWin"></i>
       </div>
     </div>
-    <!-- router-view 显示区域
-    <div>
-      <router-view></router-view>
-    </div> -->
-</div>
-  
+  </div>
 </template>
 
 <script>
@@ -53,7 +48,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 /* 头部 */
 .header {
   display: flex;
@@ -61,6 +56,8 @@ export default {
   width: 100%;
   height: 70px;
   box-shadow: 0px 2px 5px gray;
+  // 动态样式, 变量 --header-bg-color 表示 header 菜单栏的背景颜色，有不同的值
+  background-color: var(--header-bg-color);
 }
 /* logo 区域盒子 */
 .logo-container {
@@ -89,8 +86,10 @@ export default {
   /* router-link 激活后的样式，即点击后的样式 */
 .router-link-active {
   text-decoration: none;
-  border-bottom: solid 5px rgb(13, 104, 241);
-  color: rgb(13, 104, 241);
+  // 动态样式, 变量 --menu-text-color 菜单点击后底部边框的颜色
+  border-bottom: solid 5px var(--menu-text-color);
+  // 动态样式, 变量 --menu-text-color 菜单点击后图标的颜色
+  color: var(--menu-text-color);
 }
 a{
   display: block;
