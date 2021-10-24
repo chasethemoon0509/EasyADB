@@ -111,16 +111,17 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 15px;
     height: 30px;
-    background-color: rgb(13, 104, 241);
+    margin-top: 2px;
+    border-top: solid 1px gray;
+    background-color: rgb(240, 241, 246);
 }
 /* 实时时间 */
 .datetime {
     margin-left: 25px;
     height: 10px;
     font-size: 12px;
-    color: white;
+    color: black;
 }
 /* 主题按钮盒子 */
 .theme {

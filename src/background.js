@@ -5,6 +5,7 @@ import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
@@ -21,6 +22,7 @@ async function createWindow() {
       // 为 true 时表示启用 node 节点集成
       nodeIntegration: true,  // process.env.ELECTRON_NODE_INTEGRATION
       contextIsolation: false, // !process.env.ELECTRON_NODE_INTEGRATION
+      webSecurity: false
     },
     frame: false,
     title: 'EasyADB',

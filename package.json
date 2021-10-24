@@ -13,9 +13,13 @@
   },
   "main": "background.js",
   "dependencies": {
+    "axios": "^0.23.0",
     "core-js": "^3.6.5",
     "electron-store": "^8.0.1",
+    "node-cmd": "^5.0.0",
+    "vant": "^2.12.30",
     "vue": "^2.6.11",
+    "vue-axios": "^3.3.7",
     "vue-router": "^3.2.0"
   },
   "devDependencies": {
