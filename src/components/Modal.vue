@@ -1,7 +1,7 @@
 <template>
     <!-- 模态框 -->
   <div class="modal-container">
-    <span class="adbmsg">{{adbmsg}}</span>
+    <span class="adb-result">{{adbmsg}}</span>
     <button @click="modalConfirm">确定</button>
   </div>
 </template>
@@ -48,7 +48,7 @@ export default {
     cursor: pointer;
 }
 // 模态框提示语位置
-.adbmsg {
+.adb-result {
   margin-top: 30px;
 }
 </style>

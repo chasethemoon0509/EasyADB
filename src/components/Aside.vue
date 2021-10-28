@@ -8,18 +8,7 @@
         <span>状态</span>
         <span>型号</span>
       </div>
-      <!-- scrcpy 拓展按键 -->
-      <span class="aside-title">Scrcpy 按键</span>
-      <div class="scrcpy-op">
-        <button>HOME</button>
-        <button>返回</button>
-        <button>切换应用</button>
-        <button>全屏</button>
-        <button>音量 + </button>
-        <button>音量 - </button>
-        <button>电源</button>
-        <button>唤醒屏幕</button>
-      </div>
+
       <!-- adb 服务相关 -->
       <span class="aside-title">ADB 服务</span>
       <div class="adb-server">
@@ -33,6 +22,7 @@
 
 <script>
 import Modal from '@/components/Modal.vue'
+
 var cmd = require('node-cmd')
 
 export default {
@@ -84,7 +74,7 @@ export default {
           document.querySelector('.modal-container').style.visibility = 'visible'
         }
       })
-    }
+    },
   }
 }
 </script>
