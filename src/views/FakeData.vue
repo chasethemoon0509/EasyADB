@@ -1,5 +1,7 @@
 <template>
-  <h1>工具</h1>
+  <div class="fakedata-container">
+      测试数据
+  </div>
 </template>
 
 <script>

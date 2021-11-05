@@ -1,39 +1,41 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Devices from "../views/Devices.vue";
-import Apk from "../views/Apk.vue";
-import Log from "../views/Log.vue";
-import Tools from "../views/Tools.vue";
-import About from "../views/About.vue";
+// 导入 views 文件夹中的页面
+import Device from "../views/Device.vue"
+import Apk from "../views/Apk.vue"
+import Log from "../views/Log.vue"
+import FakeData from "../views/FakeData.vue"
+import About from "../views/About.vue"
+
+
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/dev",
-    name: "Devices",
-    component: Devices,
+    path: "/",
+    component: Device
+  },
+  {
+    path: "/device",
+    component: Device
   },
   {
     path: "/apk",
-    name: "Apk",
-    component: Apk,
+    component: Apk
   },
   {
     path: "/log",
-    name: "Log",
-    component: Log,
+    component: Log
   },
   {
-    path: "/tools",
-    name: "Tools",
-    component: Tools,
+    path: "/fakedata",
+    component: FakeData
   },
   {
     path: "/about",
-    name: "About",
-    component: About,
-  }
+    component: About
+  },
 ];
 
 const router = new VueRouter({

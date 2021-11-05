@@ -1,6 +1,6 @@
 <template>
-  <div>
-      <h1>vue操作</h1>
+  <div class="apk-container">
+      apk
   </div>
 </template>
 

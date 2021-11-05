@@ -1,45 +1,44 @@
 <template>
   <div id="app">
-    <!-- 头部 -->
-    <Header></Header>
-    <div id="content">
-      <!-- 侧边栏 -->
-      <Aside></Aside>
-      <!-- router-view 显示区域 -->
+    <!-- 侧边栏 -->
+    <Aside></Aside>
+    <div class="right-container">
+      <!-- 头部 -->
+      <Header></Header>
+      <!-- 页面显示区域 -->
       <router-view></router-view>
+      <!-- 底部 -->
+      <Footer></Footer>
     </div>
-    <!-- 底部区域 -->
-    <Footer></Footer>
   </div>
 </template>
 
 <script>
-import Header from "./components/Header.vue";
-import Aside from "./components/Aside.vue";
-import Footer from "./components/Footer.vue";
-
+import Aside from "./components/Aside.vue"
+import Header from "./components/Header.vue"
+import Footer from "./components/Footer.vue"
 
 export default {
-  name: 'App',
-  components: { 
-    Header,
+  name: "App",
+  components: {
     Aside,
+    Header,
     Footer
-  },
+  }
 }
 </script>
 
-<style lang="less">
-body {
+<style>
+*{
   margin: 0;
   padding: 0;
-  background-color: rgba(0, 0, 0, 0);
 }
-#app {
-  // 动态样式, 变量 --app-bg-color 表示根组件的背景颜色，有不同的值
-  background: var(--app-bg-color);
-}
-#content {
+#app{
   display: flex;
+}
+/* 右边部分的布局，右边部分包括顶部、页面显示区域、底部 */
+.right-container {
+  display: flex;
+  flex-direction: column;
 }
 </style>

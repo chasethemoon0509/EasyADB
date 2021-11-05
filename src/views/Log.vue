@@ -1,5 +1,7 @@
 <template>
-  <h1>日志</h1>
+  <div class="log-container">
+      日志
+  </div>
 </template>
 
 <script>
