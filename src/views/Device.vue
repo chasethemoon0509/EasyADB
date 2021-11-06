@@ -12,8 +12,8 @@
       <div class="list-header">
         <div class="device-name-th">设备(数量: {{ deviceCount }})</div>
         <div class="status-th">状态</div>
-        <div class="company-th">厂商</div>
         <div class="android-version-th">系统</div>
+        <div class="company-th">厂商</div>
         <div class="oprate-th">操作</div>
       </div>
       <!-- 列表主体 -->
@@ -21,8 +21,8 @@
         <div class="listItem" v-for="(item, index) in serialArr" :key="index">
           <p class="device-name">{{ item[0] }}</p>
           <p class="status">{{ item[1] }}</p>
-          <p class="company">{{ item[3] }}</p>
           <p class="android-version">{{ item[2] }}</p>
+          <p class="company">{{ item[3] }}</p>
           <p class="oprate"><button>连接</button></p>
         </div>
       </div>
@@ -48,12 +48,50 @@ export default {
     }
   },
   methods: {
+    // 获取信息方法
+    getInfo () {
+      // 获取设备名和状态
+      exec(`cd public/scrcpy/ && adb devices`, (err, stdout) => {
+        if (err) {
+          console.log("执行失败：", err)
+        }
+        let adbResult = stdout.split("\n")
+        adbResult.shift()
+        adbResult.pop()
+        adbResult.pop()
+        // 循环处理每个字符串中的转义符
+        for (let index = 0; index < adbResult.length; index++) {
+          let code = adbResult[index].split("\t")[0]
+          let status = adbResult[index].split("\t")[1].replace("\r", "")
+          let result1 = []
+          result1.push(code, status)
+          // 将处理好的数组追加到 serialArr 数组中
+          this.serialArr.push(result1)
+          // console.log("第一步处理完成后的数组，仅包含设备号和状态:", this.serialArr);
+          // 获取系统版本
+          exec(`cd public/scrcpy/ && adb -s ${this.serialArr[index][0]} shell getprop ro.build.version.release`, (err, stdout) => {
+            if (err) {
+              console.log("执行失败：", err)
+            }
+            // 加入版本信息到数组
+            this.serialArr[index].push(stdout.replace("\r\n", ""))
+            // console.log("加上版本信息后的数组：", this.serialArr);
+            // 获取厂商
+            exec(`cd public/scrcpy/ && adb -s ${this.serialArr[index][0]} -d shell getprop ro.product.brand`, (err, stdout) => {
+              if (err) {
+                console.log("执行失败：", err)
+              }
+              // 加入厂商信息到数组
+              this.serialArr[index].push(stdout.replace("\r\n", ""))
+              // console.log(this.serialArr);
+            }) // 获取厂商结束
+          }) // 获取系统版本结束
+        } // 循环结束
+      })    
+    },
     // 刷新设备列表
     refreshList () {
-      // 调用获取设备信息方法
-      this.getSerial()
-      this.getVersion()
-      this.getFullInfo()
+      console.log("调用方法结果", this.getInfo());
       // 设备数量
       let devSum = this.serialArr.length
       // 将 devSum 变量赋值给 data 属性中的 deviceCount 变量
@@ -66,66 +104,8 @@ export default {
         noDeviceTitle.style.display = "none"
         listBody.style.display = "flex"
       }
-    },
-    // 获取设备信息方法
-    getSerial () {
-      // 执行 adb.exe devices 命令, 以获取设备列表
-      exec("cd public/scrcpy-win64-v1.19/ && adb.exe devices", (error, stdout) => {
-        if (error) {
-          console.error(`执行出错: ${error}`);
-          return;
-        }
-        let result = stdout.split("\n")
-        // 然后删除数组第一个无用的字符串
-        result.shift() 
-        // 再删除数组最后一个元素
-        result.pop()
-        // 再次删除数组一个元素,加上上一次,需要删除两次数组最后的元素,之后得到的数组才是只包含设备信息的数组
-        result.pop()
-        // 存放所有的设备号和状态,设备号和状态会以一个数组先存在,然后再放到 serialAll 数组中, 结构是嵌套数组
-        // var serialAll = []
-        // 循环处理设备信息, result 是初步清理后, 只包含设备信息的数组, 但是数组中每个设备信息字符串还需要单独处理
-        for (let i = 0; i < result.length; i++) {
-          // serialCode 保存某个设备的设备号
-          let serialCode = result[i].split("\t")[0]
-          // serialStatus 保存某个设备的状态
-          let serialStatus = result[i].split("\t")[1].replace("\r", "")
-          // serialInfo 数组就是前面说到的嵌套数组中的内层数组
-          let serialInfo = [serialCode, serialStatus]
-          // 然后将内层数组 serialInfo 存到 serialAll 最外层数组中
-          this.serialArr.push(serialInfo)
-        }
-        console.log("第一步：获取设备号和状态",this.serialArr);
-      })
-    },
-    // 获取系统版本
-    getVersion () {
-      for (let j = 0; j < this.serialArr.length; j++) {
-        exec(`cd public/scrcpy-win64-v1.19/ && adb.exe -s ${this.serialArr[j][0]} shell getprop ro.build.version.release`, (error, stdout) => {
-          if (error) {
-            console.error(`执行出错: ${error}`);
-            return;
-          }
-          this.serialArr[j].push(stdout.replace("\r", "").replace("\n", ""))
-          console.log("第二步：获取版本", this.serialArr);
-        })
-      }
-    },
-    // 获取厂商
-    getFullInfo () {
-      // let fullSerial = this.getVersion()
-      for (let k = 0; k < this.serialArr.length; k++) {
-        exec(`cd public/scrcpy-win64-v1.19/ && adb.exe -s ${this.serialArr[k][0]} -d shell getprop ro.product.brand`, (error, stdout) => {
-          if (error) {
-            console.error(`执行出错: ${error}`);
-            return;
-          }
-          this.serialArr.push(stdout.replace("\r", "").replace("\n", ""))
-          console.log("第三步：获取厂商", this.serialArr);
-        })     
-      }
-    }
-
+      this.serialArr = []
+    }, // 刷新设备列表方法结束
     
   },
 }
