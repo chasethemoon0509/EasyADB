@@ -23,7 +23,7 @@
           <p class="status">{{ item[1] }}</p>
           <p class="android-version">{{ item[2] }}</p>
           <p class="company">{{ item[3] }}</p>
-          <p class="oprate"><button>连接</button></p>
+          <p class="oprate"><button @click="connect" class="connect">连接</button></p>
         </div>
       </div>
       <!-- 暂无设备提示 -->
@@ -33,7 +33,6 @@
 </template>
 
 <script>
-// const cmd = require("node-cmd")
 const { exec } = require('child_process')
 
 export default {
@@ -132,14 +131,12 @@ export default {
 .refresh-list {
   padding: 5px 0;
   width: 100px;
-  background-color: rgb(204, 204, 204);
+  background-color: rgb(33, 202, 120);
   border: none;
   cursor: pointer;
-}
-.refresh-list:hover {
-  background-color: rgb(33, 202, 120);
   color: white;
 }
+
 /* 设备列表 */
 .device-list {
   width: 650px;
@@ -232,6 +229,15 @@ export default {
 /* 操作单元格 */
 .oprate {
   width: 20%;
+}
+/* 连接按钮 */
+.connect {
+  width: 60px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  background-color: rgb(33, 202, 120);
+  color: white;
 }
 /* 滚动条的样式 */
 .list-body::-webkit-scrollbar {

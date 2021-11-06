@@ -20,10 +20,11 @@ import Footer from "./components/Footer.vue"
 
 export default {
   name: "App",
+  props: ["tips"],
   components: {
     Aside,
     Header,
-    Footer
+    Footer,
   }
 }
 </script>

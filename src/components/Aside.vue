@@ -11,17 +11,57 @@
         <router-link to="/fakedata"><i class="iconfont icon-gongju"></i>测试数据</router-link>
         <router-link to="/about"><i class="iconfont icon-guanyu"></i>使用说明</router-link>
     </div>
-
+    <!-- adb 服务按钮外层盒子 -->
     <div class="adb-serve">
-        <button>重启ADB服务</button>
-        <button>停止ADB服务</button>
+        <button @click="restartADB">重启ADB服务</button>
+        <button @click="stopADB">停止ADB服务</button>
     </div>
+    <!-- Modal 框 -->
+    <Modal :tips="tips"></Modal>
   </div>
 </template>
 
 <script>
-export default {
+const { exec } = require('child_process')
+import Modal from "./Modal.vue"
 
+export default {
+    components: {
+        Modal
+    },
+    data () {
+        return {
+            tips: ""
+        }
+    },
+    methods: {
+        restartADB () {
+            exec(`cd public/scrcpy/ && adb start-server`, (err, stdout) => {
+                if (err) {
+                    console.log("adb服务启动失败：", err);
+                    this.tips = "adb服务启动失败："+err
+                }
+                this.tips = "启动成功"
+                // 修改模态框的 display 属性
+                let btn = document.querySelector(".modal-container")
+                btn.style.display = "flex"
+                console.log("启动成功：", stdout);
+            })
+        },
+        stopADB () {
+            exec(`cd public/scrcpy/ && adb kill-server`, (err, stdout) => {
+                if (err) {
+                    console.log("adb服务启动失败：", err)
+                    this.tips = "adb服务启动失败："+err
+                }
+                this.tips = "停止成功"
+                // 修改模态框的 display 属性
+                let btn = document.querySelector(".modal-container")
+                btn.style.display = "flex"
+                console.log("停止成功", stdout);
+            })
+        }
+    }
 }
 </script>
 
@@ -86,13 +126,9 @@ a:hover {
     /* margin-bottom: 20px; */
     padding: 5px 0;
     width: 100px;
-    background-color: rgb(204, 204, 204);
-    border: none;
     cursor: pointer;
-}
-/* adb 服务按钮 hover 时的样式 */
-.adb-serve button:hover {
     background-color: rgb(33, 202, 120);
     color: white;
+    border: none;
 }
 </style>
