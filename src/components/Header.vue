@@ -39,7 +39,8 @@ export default {
 /* 关闭、最小化操作外层盒子 */
 .window-op {
     position: absolute;
-    right: 10px;
+    right: 0px;
+    /* top: 5px; */
     display: flex;
     justify-content: space-around;
     align-items: center;

@@ -11,8 +11,9 @@ export default {
     methods: {
         // 确定
         confirmTips () {
-            let btn = document.querySelector(".modal-container")
-            btn.style.display = "none"
+            let modal = document.querySelector(".modal-container")
+            modal.style.display = "none"
+            console.log(this.tips);
         }
     }
 }

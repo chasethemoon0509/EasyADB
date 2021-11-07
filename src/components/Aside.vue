@@ -17,7 +17,7 @@
         <button @click="stopADB">停止ADB服务</button>
     </div>
     <!-- Modal 框 -->
-    <Modal :tips="tips"></Modal>
+    <Modal :tips="adbmsg"></Modal>
   </div>
 </template>
 
@@ -31,36 +31,54 @@ export default {
     },
     data () {
         return {
-            tips: ""
+            adbmsg: ""
         }
     },
     methods: {
         restartADB () {
-            exec(`cd public/scrcpy/ && adb start-server`, (err, stdout) => {
+            exec(`cd public/python/ && adb start-server`, (err, stdout) => {
+                let modal = document.querySelector(".modal-container")
                 if (err) {
                     console.log("adb服务启动失败：", err);
-                    this.tips = "adb服务启动失败："+err
+                    this.adbmsg = "启动失败"
+                    // 修改模态框的 display 属性
+                    modal.style.display = "flex"
+                    console.log("结果字符串中有 failed :", stdout);
+                } else if (stdout.search("failed") == -1) {
+                    this.adbmsg = "启动成功"
+                    // 修改模态框的 display 属性
+                    modal.style.display = "flex"
+                    console.log("结果字符串中没有 failed :", stdout);
+                } else {
+                    this.adbmsg = "启动失败"
+                    // 修改模态框的 display 属性
+                    modal.style.display = "flex"
+                    console.log("其他情况, 启动失败");
                 }
-                this.tips = "启动成功"
-                // 修改模态框的 display 属性
-                let btn = document.querySelector(".modal-container")
-                btn.style.display = "flex"
-                console.log("启动成功：", stdout);
             })
         },
         stopADB () {
-            exec(`cd public/scrcpy/ && adb kill-server`, (err, stdout) => {
+            exec(`cd public/python/ && adb kill-server`, (err, stdout) => {
+                let modal = document.querySelector(".modal-container")
                 if (err) {
-                    console.log("adb服务启动失败：", err)
-                    this.tips = "adb服务启动失败："+err
+                    console.log("adb服务停止失败：", err);
+                    this.adbmsg = "停止失败"
+                    // 修改模态框的 display 属性
+                    modal.style.display = "flex"
+                    console.log("结果字符串中有 failed :", stdout);
+                } else if (stdout.search("failed") == -1) {
+                    this.adbmsg = "停止成功"
+                    // 修改模态框的 display 属性
+                    modal.style.display = "flex"
+                    console.log("结果字符串中没有 failed :", stdout);
+                } else {
+                    this.adbmsg = "停止失败"
+                    // 修改模态框的 display 属性
+                    modal.style.display = "flex"
+                    console.log("其他情况, 停止失败");
                 }
-                this.tips = "停止成功"
-                // 修改模态框的 display 属性
-                let btn = document.querySelector(".modal-container")
-                btn.style.display = "flex"
-                console.log("停止成功", stdout);
             })
-        }
+        },
     }
 }
 </script>

@@ -18,94 +18,99 @@
       </div>
       <!-- 列表主体 -->
       <div class="list-body">
-        <div class="listItem" v-for="(item, index) in serialArr" :key="index">
-          <p class="device-name">{{ item[0] }}</p>
-          <p class="status">{{ item[1] }}</p>
-          <p class="android-version">{{ item[2] }}</p>
-          <p class="company">{{ item[3] }}</p>
-          <p class="oprate"><button @click="connect" class="connect">连接</button></p>
+        <div class="listItem" v-for="(item, index) in deviceArr" :key="index">
+          <p class="device-name">{{ item.serial }}</p>
+          <p class="status">{{ item.status }}</p>
+          <p class="android-version">{{ item.version }}</p>
+          <p class="company">{{ item.brand }}</p>
+          <p class="oprate"><button class="connect" @click="connect(item.serial)">连接</button></p>
         </div>
       </div>
       <!-- 暂无设备提示 -->
       <p class="no-device-title">暂 无 设 备</p>
     </div>
+    <Modal :tips="modalMsg"></Modal>
   </div>
 </template>
 
 <script>
-const { exec } = require('child_process')
+import Modal from "../components/Modal.vue"
+const { exec } = require("child_process")
 
 export default {
+  components: {
+    Modal
+  },
   data () {
     return {
       // 设备数量
       deviceCount: 0,
-      // 设备号
-      serialArr: [],
+      // 设备
+      deviceArr: [],
       // 当前连接设备
-      currentConnect: ""
+      currentConnect: "",
+      // 接口返回无设备
+      modalMsg: ""
     }
   },
   methods: {
-    // 获取信息方法
-    getInfo () {
-      // 获取设备名和状态
-      exec(`cd public/scrcpy/ && adb devices`, (err, stdout) => {
-        if (err) {
-          console.log("执行失败：", err)
-        }
-        let adbResult = stdout.split("\n")
-        adbResult.shift()
-        adbResult.pop()
-        adbResult.pop()
-        // 循环处理每个字符串中的转义符
-        for (let index = 0; index < adbResult.length; index++) {
-          let code = adbResult[index].split("\t")[0]
-          let status = adbResult[index].split("\t")[1].replace("\r", "")
-          let result1 = []
-          result1.push(code, status)
-          // 将处理好的数组追加到 serialArr 数组中
-          this.serialArr.push(result1)
-          // console.log("第一步处理完成后的数组，仅包含设备号和状态:", this.serialArr);
-          // 获取系统版本
-          exec(`cd public/scrcpy/ && adb -s ${this.serialArr[index][0]} shell getprop ro.build.version.release`, (err, stdout) => {
-            if (err) {
-              console.log("执行失败：", err)
-            }
-            // 加入版本信息到数组
-            this.serialArr[index].push(stdout.replace("\r\n", ""))
-            // console.log("加上版本信息后的数组：", this.serialArr);
-            // 获取厂商
-            exec(`cd public/scrcpy/ && adb -s ${this.serialArr[index][0]} -d shell getprop ro.product.brand`, (err, stdout) => {
-              if (err) {
-                console.log("执行失败：", err)
-              }
-              // 加入厂商信息到数组
-              this.serialArr[index].push(stdout.replace("\r\n", ""))
-              // console.log(this.serialArr);
-            }) // 获取厂商结束
-          }) // 获取系统版本结束
-        } // 循环结束
-      })    
-    },
-    // 刷新设备列表
+    // 刷新设备列表方法
     refreshList () {
-      console.log("调用方法结果", this.getInfo());
-      // 设备数量
-      let devSum = this.serialArr.length
-      // 将 devSum 变量赋值给 data 属性中的 deviceCount 变量
-      this.deviceCount = devSum
-      // 如果设备数量不等于0,即代表有设备
-      if (devSum != 0) {
-        // 隐藏"暂无设备提示"
-        let noDeviceTitle = document.querySelector(".no-device-title")
-        let listBody = document.querySelector(".list-body")
-        noDeviceTitle.style.display = "none"
-        listBody.style.display = "flex"
-      }
-      this.serialArr = []
+      this.$axios.get("/dev_info")
+                .catch((err) => {
+                  console.log(err);
+                })
+                .then((res) => {
+                  if (res.data.data.length == 0) {
+                    this.$dialog.alert({
+                      title: '标题',
+                      message: '弹窗内容',
+                    }).then(() => {
+                      // on close
+                    });
+                    console.log("暂无设备");
+                  } else if (res.data.data.length != 0) {
+                    // 获取暂无设备提示语的 dom 元素
+                    let no_device_title = document.querySelector(".no-device-title")
+                    // 将暂无设备提示语的属性设为隐藏
+                    no_device_title.style.display = "none"
+                    // 获取列表主体的 dom 元素
+                    let list_body = document.querySelector(".list-body")
+                    // 将列表主体的属性设为显示 flex 布局
+                    list_body.style.display = "flex"
+                    // 数组的长度可以作为设备的数量，并传给 deviceCount 变量
+                    this.deviceCount = res.data.data.length
+                    // 将设备信息数组传给 deviceArr 变量
+                    this.deviceArr = res.data.data
+                    console.log("赋值后的 deviceArr 变量：", this.deviceArr);
+                  } else {
+                    console.log("排除为空和不为空后的结果: ", res.data.data);
+                  }
+                })
     }, // 刷新设备列表方法结束
-    
+    // 连接设备
+    connect (serial) {
+      exec(`cd public/python/ && scrcpy --serial ${serial}1`, (err, stdout) => {
+        let modal = document.querySelector(".modal-container")
+          if (err) {
+            this.modalMsg = "连接失败"
+            // 修改模态框的 display 属性
+            modal.style.display = "flex"
+            console.log("结果字符串中有 failed :", stdout);
+          } else if (stdout.search("failed") == -1) {
+            this.modalMsg = "连接成功"
+            // 修改模态框的 display 属性
+            modal.style.display = "flex"
+            console.log("结果字符串中没有 failed :", stdout);
+          } else {
+            this.modalMsg = "连接失败"
+            // 修改模态框的 display 属性
+            modal.style.display = "flex"
+            console.log("其他情况, 启动失败");
+          }
+        })
+    }// 连接设备方法结束
+
   },
 }
 </script>
@@ -185,11 +190,10 @@ export default {
 }
 /* 列表主体 */
 .list-body {
+  display: none;
   width: 660px;
   height: 100%;
-  display: none;
   flex-direction: column;
-  /* border: solid 2px rgb(33, 202, 120); */
   color: rgb(204, 204, 204);
   overflow-y: scroll;
 }
@@ -205,8 +209,7 @@ export default {
 /* 每一行的每个单元格 */
 .listItem p {
   display: block;
-  height: 100%;
-  /* border: solid 2px red;  */
+  height: 50px;
   text-align: center;
   line-height: 50px;
 }
@@ -250,9 +253,19 @@ export default {
 }
 /* 暂无设备提示 */
 .no-device-title {
+  /* display: none; */
   margin: 50px auto;
   font-size: 30px;
   color: rgb(204, 204, 204);
 }
-
+.van-dialog {
+  display: flex;
+  position: absolute;
+  top: 250px;
+  left: 400px;
+  width: 350px;
+  height: 150px;
+    /* border: solid 2px red; */
+  background-color: rgb(50, 56, 76);
+}
 </style>
