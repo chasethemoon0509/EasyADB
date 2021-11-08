@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import subprocess
 
 
 app = Flask(__name__)
@@ -40,6 +41,7 @@ def get_brand(serial):
     return result
 
 
+# 接口: 返回设备信息
 @app.route('/dev_info', methods=["GET"])
 def dev_info():
     serial_list = get_serial()
@@ -56,10 +58,32 @@ def dev_info():
         serial_list[k]["id"] = k
     # 定义返回的数据
     data = {
-        "msg": "success",
         "data": serial_list
     }
     return jsonify(data)
+
+
+# 接口: 连接设备
+@app.route('/connect', methods=["GET"])
+def connect():
+    serial = request.values.get("serial")
+    print(serial)
+    p = subprocess.Popen("scrcpy --serial {}".format(serial), shell=True, stdout=subprocess.PIPE)
+
+    for i in iter(p.stdout.readline, "b"):
+        if not i:
+            break
+        connect_result = i.decode("gbk")
+        print(connect_result)
+        if "1 file pushed" in connect_result:
+            data = {
+                "data": 1
+            }
+        else:
+            data = {
+                "data": 0
+            }
+        return jsonify(data)
 
 
 if __name__ == '__main__':

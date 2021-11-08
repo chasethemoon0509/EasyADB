@@ -29,60 +29,56 @@
       <!-- 暂无设备提示 -->
       <p class="no-device-title">暂 无 设 备</p>
     </div>
-    <Modal :tips="modalMsg"></Modal>
   </div>
 </template>
 
 <script>
-import Modal from "../components/Modal.vue"
-const { exec } = require("child_process")
+// const { exec } = require("child_process")
 
 export default {
-  components: {
-    Modal
-  },
   data () {
     return {
       // 设备数量
       deviceCount: 0,
-      // 设备
+      // 设备信息数组
       deviceArr: [],
-      // 当前连接设备
+      // 当前连接设备数量
       currentConnect: "",
-      // 接口返回无设备
-      modalMsg: ""
     }
   },
   methods: {
     // 刷新设备列表方法
     refreshList () {
+      // 初始化设备信息数组和设备数量
+      this.deviceArr = []
+      this.deviceCount = 0
+      // 列表主体
+      let list = document.querySelector(".list-body")
+      // 无设备提醒文字
+      let nodevice = document.querySelector(".no-device-title")
       this.$axios.get("/dev_info")
                 .catch((err) => {
+                  this.$dialog.alert({
+                      confirmButtonText: "确 定",
+                      message: "未知错误,请重试",
+                  })
                   console.log(err);
                 })
                 .then((res) => {
                   if (res.data.data.length == 0) {
                     this.$dialog.alert({
-                      title: '标题',
-                      message: '弹窗内容',
-                    }).then(() => {
-                      // on close
-                    });
-                    console.log("暂无设备");
+                      confirmButtonText: "确 定",
+                      message: "未发现设备",
+                    })
                   } else if (res.data.data.length != 0) {
-                    // 获取暂无设备提示语的 dom 元素
-                    let no_device_title = document.querySelector(".no-device-title")
-                    // 将暂无设备提示语的属性设为隐藏
-                    no_device_title.style.display = "none"
-                    // 获取列表主体的 dom 元素
-                    let list_body = document.querySelector(".list-body")
-                    // 将列表主体的属性设为显示 flex 布局
-                    list_body.style.display = "flex"
-                    // 数组的长度可以作为设备的数量，并传给 deviceCount 变量
+                    // 将设备数量传给 deviceCount 变量
                     this.deviceCount = res.data.data.length
                     // 将设备信息数组传给 deviceArr 变量
                     this.deviceArr = res.data.data
-                    console.log("赋值后的 deviceArr 变量：", this.deviceArr);
+                    // 将列表显示
+                    list.style.display = "flex"
+                    // 将暂无设备提醒文字隐藏
+                    nodevice.style.display = "none"
                   } else {
                     console.log("排除为空和不为空后的结果: ", res.data.data);
                   }
@@ -90,25 +86,32 @@ export default {
     }, // 刷新设备列表方法结束
     // 连接设备
     connect (serial) {
-      exec(`cd public/python/ && scrcpy --serial ${serial}1`, (err, stdout) => {
-        let modal = document.querySelector(".modal-container")
-          if (err) {
-            this.modalMsg = "连接失败"
-            // 修改模态框的 display 属性
-            modal.style.display = "flex"
-            console.log("结果字符串中有 failed :", stdout);
-          } else if (stdout.search("failed") == -1) {
-            this.modalMsg = "连接成功"
-            // 修改模态框的 display 属性
-            modal.style.display = "flex"
-            console.log("结果字符串中没有 failed :", stdout);
-          } else {
-            this.modalMsg = "连接失败"
-            // 修改模态框的 display 属性
-            modal.style.display = "flex"
-            console.log("其他情况, 启动失败");
-          }
+      console.log(serial);
+      this.$axios.get("/connect", {
+        params: {
+          serial
+        }
+      }).catch((err) => {
+        this.$dialog.alert({
+          confirmButtonText: "确 定",
+          message: "未知错误,请重试",
         })
+        console.log(err);
+      }).then((res) => {
+        if (res.data.data == 1) {
+          this.$dialog.alert({
+          confirmButtonText: "确 定",
+          message: "连接成功",
+          })
+        } else {
+          this.$dialog.alert({
+          confirmButtonText: "确 定",
+          message: "连接失败",
+          })
+        }
+        console.log(res.data.data);
+      })
+        
     }// 连接设备方法结束
 
   },
@@ -258,8 +261,12 @@ export default {
   font-size: 30px;
   color: rgb(204, 204, 204);
 }
+/* vant 对话框样式 */
 .van-dialog {
   display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
   position: absolute;
   top: 250px;
   left: 400px;
@@ -267,5 +274,33 @@ export default {
   height: 150px;
     /* border: solid 2px red; */
   background-color: rgb(50, 56, 76);
+}
+/* vant 对话框的内容样式 */
+.van-dialog__message {
+  color: white;
+}
+.van-hairline--top.van-dialog__footer {
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  width: 100px;
+  height: 30px;
+  background-color: rgb(50, 56, 76);
+  /* color: white; */
+  /* border: solid 2px red; */
+}
+.van-button.van-button--default.van-button--large.van-dialog__confirm {
+  border: none;
+}
+.van-button__content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  width: 100px;
+  height: 30px;
+  background-color: rgb(33, 202, 120);
+  color: white;
+  cursor: pointer;
 }
 </style>
