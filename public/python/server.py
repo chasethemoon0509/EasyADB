@@ -86,6 +86,37 @@ def connect():
         return jsonify(data)
 
 
+# 接口: 启动 adb 服务
+@app.route('/adb_start', methods=["GET"])
+def adb_server_start():
+    result = os.popen("adb start-server").read()
+    print(result)
+    if result == "" or "daemon started successfully" in result:
+        data = {
+            "data": 1
+        }
+    else:
+        data = {
+            "data": 0
+        }
+    return jsonify(data)
+
+
+# 接口: 停止 adb 服务
+@app.route('/adb_stop', methods=["GET"])
+def adb_server_stop():
+    result = os.popen("adb kill-server").read()
+    if result:
+        data = {
+            "data": 1
+        }
+    else:
+        data = {
+            "data": 0
+        }
+    return jsonify(data)
+
+
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=9527)
 
