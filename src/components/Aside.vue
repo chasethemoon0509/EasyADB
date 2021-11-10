@@ -13,73 +13,52 @@
     </div>
     <!-- adb 服务按钮外层盒子 -->
     <div class="adb-serve">
-        <button @click="restartADB">重启ADB服务</button>
+        <button @click="startADB">启动ADB服务</button>
         <button @click="stopADB">停止ADB服务</button>
-        <button @click="test">test</button>
     </div>
   </div>
 </template>
 
 <script>
-const { exec } = require('child_process')
-import { getDevInfo } from "../utils/api"
+import allApi from "../utils/api"
 
 export default {
-    methods: {
-        // 重启 adb 服务方法开始
-        restartADB () {
-            this.$axios.get("/adb_start")
-                .catch((err) => {
-                    this.$dialog.alert({
-                        confirmButtonText: "确 定",
-                        message: "未知错误,请重试",
-                    })
-                    console.log(err);
-                })
-                .then((res) => {
-                    if (res.data.data == 1) {
-                        this.$dialog.alert({
-                            confirmButtonText: "确 定",
-                            message: "启动成功",
-                        })
-                    } else {
-                        this.$dialog.alert({
-                            confirmButtonText: "确 定",
-                            message: "启动失败，请重试",
-                        })
-                    }
-                    console.log(res);
-                })
-                
-        },// 重启 adb 服务方法结束
-        // 停止 adb 服务方法开始
-        stopADB () {
-            exec(`cd public/python/ && adb kill-server`, (err, stdout) => {
-                let modal = document.querySelector(".modal-container")
-                if (err) {
-                    console.log("adb服务停止失败：", err);
-                    this.adbmsg = "停止失败"
-                    // 修改模态框的 display 属性
-                    modal.style.display = "flex"
-                    console.log("结果字符串中有 failed :", stdout);
-                } else if (stdout.search("failed") == -1) {
-                    this.adbmsg = "停止成功"
-                    // 修改模态框的 display 属性
-                    modal.style.display = "flex"
-                    console.log("结果字符串中没有 failed :", stdout);
-                } else {
-                    this.adbmsg = "停止失败"
-                    // 修改模态框的 display 属性
-                    modal.style.display = "flex"
-                    console.log("其他情况, 停止失败");
-                }
-            })
-        },   // 停止 adb 服务方法结束
-        async test () {
-            const data = await getDevInfo()
-            console.log("请求结果", data);
-        }
+  data () {
+    return {
+      // 弹窗信息
+      adbServerTips: ""
     }
+  },
+  methods: {
+    // 启动 adb 服务方法开始
+    async startADB () {
+        const res = await allApi.adbStart()
+        if (res.data.data == 1) {
+          this.adbServerTips = "启动成功"
+        } else {
+          this.adbServerTips = "未知错误,请重试"
+        }
+        // 弹窗
+        this.$dialog.alert({
+          confirmButtonText: "确 定",
+          message: this.adbServerTips,
+        })
+    },// 启动 adb 服务方法结束
+    // 停止 adb 服务方法开始
+    async stopADB () {
+        const res = await allApi.adbStop()
+        if (res.data.data == 1) {
+          this.adbServerTips = "停止成功"
+        } else {
+          this.adbServerTips = "未知错误,请重试"
+        }
+        // 弹窗
+        this.$dialog.alert({
+          confirmButtonText: "确 定",
+          message: this.adbServerTips,
+        })
+    },   // 停止 adb 服务方法结束
+  },
 }
 </script>
 

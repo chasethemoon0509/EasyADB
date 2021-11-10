@@ -106,7 +106,7 @@ def adb_server_start():
 @app.route('/adb_stop', methods=["GET"])
 def adb_server_stop():
     result = os.popen("adb kill-server").read()
-    if result:
+    if result == "" or "cannot" in result:
         data = {
             "data": 1
         }

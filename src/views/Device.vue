@@ -33,7 +33,7 @@
 </template>
 
 <script>
-// const { exec } = require("child_process")
+import allApi from "../utils/api"
 
 export default {
   data () {
@@ -44,11 +44,13 @@ export default {
       deviceArr: [],
       // 当前连接设备数量
       currentConnect: "",
+      // 弹窗文字
+      deviceListTips: ""
     }
   },
   methods: {
     // 刷新设备列表方法
-    refreshList () {
+    async refreshList () {
       // 初始化设备信息数组和设备数量
       this.deviceArr = []
       this.deviceCount = 0
@@ -56,33 +58,21 @@ export default {
       let list = document.querySelector(".list-body")
       // 无设备提醒文字
       let nodevice = document.querySelector(".no-device-title")
-      this.$axios.get("/dev_info")
-                .catch((err) => {
-                  this.$dialog.alert({
-                      confirmButtonText: "确 定",
-                      message: "未知错误,请重试",
-                  })
-                  console.log(err);
-                })
-                .then((res) => {
-                  if (res.data.data.length == 0) {
-                    this.$dialog.alert({
-                      confirmButtonText: "确 定",
-                      message: "未发现设备",
-                    })
-                  } else if (res.data.data.length != 0) {
-                    // 将设备数量传给 deviceCount 变量
-                    this.deviceCount = res.data.data.length
-                    // 将设备信息数组传给 deviceArr 变量
-                    this.deviceArr = res.data.data
-                    // 将列表显示
-                    list.style.display = "flex"
-                    // 将暂无设备提醒文字隐藏
-                    nodevice.style.display = "none"
-                  } else {
-                    console.log("排除为空和不为空后的结果: ", res.data.data);
-                  }
-                })
+      const res = await allApi.getDevInfo()
+      if (res.data.data.length == 0) {
+        this.deviceListTips = "暂无设备，请先将设备与电脑连接"
+        console.log(this.deviceListTips);
+      } else {
+        list.style.display = "flex"
+        nodevice.style.display = "none"
+        console.log(res.data.data);
+      }
+      // 弹窗
+      this.$dialog.alert({
+        confirmButtonText: "确 定",
+        message: this.adeviceListTips,
+      })
+      
     }, // 刷新设备列表方法结束
     // 连接设备
     connect (serial) {
@@ -112,8 +102,7 @@ export default {
         console.log(res.data.data);
       })
         
-    }// 连接设备方法结束
-
+    },// 连接设备方法结束
   },
 }
 </script>

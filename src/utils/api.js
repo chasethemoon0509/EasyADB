@@ -23,7 +23,6 @@ const adbStop = function () {
     return request.get("/adb_stop")
 }
 
-
 const allApi = {
     getDevInfo,
     connect,
