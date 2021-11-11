@@ -7,9 +7,9 @@ const getDevInfo = function () {
 }
 
 // 连接设备接口
-const connect = function (serial) {
+const connect = function (serialCode) {
     return request.get("/connect", {
-        params: serial
+        params: {"serial": serialCode}
     })
 }
 

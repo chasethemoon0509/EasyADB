@@ -23,7 +23,7 @@
           <p class="status">{{ item.status }}</p>
           <p class="android-version">{{ item.version }}</p>
           <p class="company">{{ item.brand }}</p>
-          <p class="oprate"><button class="connect" @click="connect(item.serial)">连接</button></p>
+          <p class="oprate"><button class="connect" @click="connectDevice(item.serial)">连接</button></p>
         </div>
       </div>
       <!-- 暂无设备提示 -->
@@ -60,48 +60,39 @@ export default {
       let nodevice = document.querySelector(".no-device-title")
       const res = await allApi.getDevInfo()
       if (res.data.data.length == 0) {
-        this.deviceListTips = "暂无设备，请先将设备与电脑连接"
-        console.log(this.deviceListTips);
-      } else {
+        this.deviceListTips = "暂无设备,请保证设备已连接电脑"
+      } else if(res.data.data.length > 0) {
         list.style.display = "flex"
         nodevice.style.display = "none"
+        this.deviceArr = res.data.data
+        this.deviceCount = res.data.data.length
+        this.deviceListTips = "获取成功"
         console.log(res.data.data);
+      } else {
+        this.deviceListTips = "未知错误,请重试"
       }
       // 弹窗
       this.$dialog.alert({
         confirmButtonText: "确 定",
-        message: this.adeviceListTips,
+        message: this.deviceListTips,
       })
-      
     }, // 刷新设备列表方法结束
     // 连接设备
-    connect (serial) {
+    async connectDevice (serial) {
       console.log(serial);
-      this.$axios.get("/connect", {
-        params: {
-          serial
-        }
-      }).catch((err) => {
-        this.$dialog.alert({
-          confirmButtonText: "确 定",
-          message: "未知错误,请重试",
-        })
-        console.log(err);
-      }).then((res) => {
-        if (res.data.data == 1) {
-          this.$dialog.alert({
-          confirmButtonText: "确 定",
-          message: "连接成功",
-          })
-        } else {
-          this.$dialog.alert({
-          confirmButtonText: "确 定",
-          message: "连接失败",
-          })
-        }
-        console.log(res.data.data);
+      const res = await allApi.connect(serial)
+      if (res.data.data == 1) {
+        this.deviceListTips = "连接成功"
+      } else if (res.data.data == 0) {
+        this.deviceListTips = "连接失败,请重试"
+      } else {
+        this.deviceListTips = "未知错误,请重试"
+      }
+      // 弹窗
+      this.$dialog.alert({
+        confirmButtonText: "确 定",
+        message: this.deviceListTips,
       })
-        
     },// 连接设备方法结束
   },
 }
@@ -269,17 +260,13 @@ export default {
   color: white;
 }
 .van-hairline--top.van-dialog__footer {
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
   width: 100px;
   height: 30px;
   background-color: rgb(50, 56, 76);
-  /* color: white; */
-  /* border: solid 2px red; */
 }
 .van-button.van-button--default.van-button--large.van-dialog__confirm {
   border: none;
+  margin-top: 10px;
 }
 .van-button__content {
   display: flex;
