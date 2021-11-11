@@ -3,7 +3,7 @@
     <!-- 设备页面的头部 -->
     <div class="device-header">
       <!-- 当前连接的设备 -->
-      <p class="now-device">当前连接的设备：{{ currentConnect }}</p>
+      <p class="now-device">当前连接的设备：{{ currentDeviceName }}</p>
       <button class="refresh-list" @click="refreshList">刷新设备列表</button>
     </div>
     <!-- 设备列表最外层盒子 -->
@@ -45,7 +45,9 @@ export default {
       // 当前连接设备数量
       currentConnect: "",
       // 弹窗文字
-      deviceListTips: ""
+      deviceListTips: "",
+      // 当前连接的设备名
+      currentDeviceName: ""
     }
   },
   methods: {
@@ -83,6 +85,7 @@ export default {
       const res = await allApi.connect(serial)
       if (res.data.data == 1) {
         this.deviceListTips = "连接成功"
+        this.currentDeviceName = serial
       } else if (res.data.data == 0) {
         this.deviceListTips = "连接失败,请重试"
       } else {
