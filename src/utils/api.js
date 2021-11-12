@@ -23,11 +23,17 @@ const adbStop = function () {
     return request.get("/adb_stop")
 }
 
+// 获取app信息、包名、版本
+const getAppInfo = function () {
+    return request.get("/get_app_info")
+}
+
 const allApi = {
     getDevInfo,
     connect,
     adbStart,
-    adbStop
+    adbStop,
+    getAppInfo
 }
 
 export default allApi

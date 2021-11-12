@@ -6,9 +6,10 @@ import axios from "axios";
 import './assets/iconfont/iconfont.css'
 // 引入主题样式文件
 import "@/assets/less/theme.less";
-import { Dialog } from 'vant'
+import { Dialog, Loading  } from 'vant'
 
 Vue.use(Dialog)
+Vue.use(Loading)
 
 Vue.config.productionTip = false;
 

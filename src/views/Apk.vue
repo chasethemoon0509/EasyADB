@@ -3,7 +3,7 @@
     <!-- 头部 -->
       <div class="apk-header">
         <p>对设备中的应用进行操作</p>
-        <button class="refresh-app-list">刷新应用列表</button>
+        <button class="refresh-app-list" @click="refrushAppInfo">刷新应用列表</button>
       </div>
       <!-- 设备列表最外层盒子 -->
       <div class="device-list">
@@ -14,28 +14,62 @@
               <i class="iconfont icon-sousuo" id="search"></i>
               <input type="search" placeholder="搜索" class="search-input">
             </div>
-            
           </div>
           <div class="app-version-th">版本</div>
           <div class="app-oprate-th">操作</div>
         </div>
       <!-- 列表主体 -->
-        <div class="list-body">
-          <div class="listItem" v-for="(item, index) in deviceArr" :key="index">
-            <p class="app-version">{{ item.status }}</p>
-            <p class="package-name">{{ item.version }}</p>
+        <div class="app-list-body">
+          <div class="applistItem" v-for="(item, index) in appList" :key="index">
+            <p class="app-version">{{ item.packageName }}</p>
+            <p class="package-name">{{ item.appVersion }}</p>
             <p class="app-oprate"><button class="connect" @click="connectDevice(item.serial)">连接</button></p>
           </div>
         </div>
       <!-- 暂无设备提示 -->
-      <p class="no-device-title">暂 无 应 用</p>
+      <p class="no-app-title">暂 无 应 用</p>
     </div>
   </div>
 </template>
 
 <script>
-export default {
+import allApi from "../utils/api"
 
+export default {
+  data () {
+    return {
+      // app 列表
+      appList: []
+    }
+  },
+  methods: {
+    // 获取应用信息
+    async refrushAppInfo() {
+      this.$dialog.alert({
+        confirmButtonText: "确 定",
+        message: "加载中",
+      })
+      const res = await allApi.getAppInfo()
+      if (res.statusText == "OK") {
+        let vantDialog = document.querySelector(".van-dialog")
+        vantDialog.style.display = "none"
+      }
+      // 列表主体
+      let list = document.querySelector(".app-list-body")
+      // 无 app 信息提示
+      let noapp = document.querySelector(".no-app-title")
+
+      if (res.data.length != 0) {
+        this.appList = res.data
+        list.style.display = "flex"
+        noapp.style.display = "none"
+        console.log(res);
+      } else {
+        console.log("错误");
+      }
+      
+    }, // 获取应用信息结束
+  }
 }
 </script>
 
@@ -85,9 +119,22 @@ export default {
   color: rgb(204, 204, 204);
   text-align: center;
 }
+/* 每一行 */
+.applistItem {
+  display: flex;
+  width: 100%;
+  height: 50px;
+}
+/* 每一行的单元格 */
+.applistItem p {
+  display: block;
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
+}
 /* 系统版本表头 */
 .app-version-th {
-  width: 10%;
+  width: 30%;
   border-right: solid 1px rgb(66, 76, 104);
 }
 /* 包名表头 */
@@ -99,11 +146,20 @@ export default {
 }
 /* 操作表头 */
 .app-oprate-th {
-  width: 40%;
+  width: 20%;
+}
+/* 列表主体 */
+.app-list-body {
+  display: none;
+  width: 660px;
+  height: 100%;
+  flex-direction: column;
+  color: rgb(204, 204, 204);
+  overflow-y: scroll;
 }
 /* 应用版本单元格 */
 .app-version {
-  width: 10%;
+  width: 30%;
 }
 /* 应用包名单元格 */
 .package-name {
@@ -111,7 +167,7 @@ export default {
 }
 /* 操作单元格 */
 .app-oprate {
-  width: 40%;
+  width: 20%;
 }
 /* 搜索功能最外层盒子 */
 .search-container {
@@ -137,5 +193,10 @@ export default {
   margin-left: 5px;
   color: rgb(204, 204, 204);
   cursor: pointer;
+}
+.no-app-title {
+  margin: 50px auto;
+  font-size: 30px;
+  color: rgb(204, 204, 204);
 }
 </style>

@@ -117,6 +117,26 @@ def adb_server_stop():
     return jsonify(data)
 
 
+# 方法: 获取包名
+def get_package():
+    cmd_result = os.popen("adb -s 306219798900525 shell pm list packages -3").read().replace("package:", "").split("\n")
+    cmd_result.pop()
+    package_names = []
+    for i in cmd_result:
+        package_names.append({"packageName": i})
+    return package_names
+
+
+# 接口: 获取应用的版本，并将包名加入字典
+@app.route("/get_app_info", methods=["GET"])
+def get_app_version():
+    package_names_version = get_package()
+    for i in range(0, len(package_names_version)):
+        result = os.popen('adb shell pm dump {} | findstr "versionName"'.format(package_names_version[i]["packageName"])).read().replace("versionName=", "").replace("\n", "").replace(" ", "")
+        package_names_version[i]["appVersion"] = result
+    return jsonify(package_names_version)
+
+
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=9527)
 
