@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id  */
-  src: url('iconfont.ttf?t=1636725478724') format('truetype');
+  src: url('iconfont.ttf?t=1634568639692') format('truetype');
 }
 
 .iconfont {
@@ -27,10 +27,6 @@
   content: "\eaf2";
 }
 
-.icon-sousuo:before {
-  content: "\eafe";
-}
-
 .icon-gongju:before {
   content: "\e648";
 }
@@ -47,7 +43,7 @@
   content: "\ecd8";
 }
 
-.icon-baitianmoshi:before {
+.icon-baitian:before {
   content: "\e769";
 }
 

@@ -6,7 +6,7 @@
     <!-- 菜单 -->
     <div class="menu-container">
         <router-link to="/device"><i class="iconfont icon-shouji"></i>设备连接</router-link>
-        <router-link to="/apk"><i class="iconfont icon-apk"></i>apk操作</router-link>
+        <router-link to="/apk"><i class="iconfont icon-apk"></i>应用操作</router-link>
         <router-link to="/log"><i class="iconfont icon-rizhi"></i>日志输出</router-link>
         <router-link to="/fakedata"><i class="iconfont icon-gongju"></i>测试数据</router-link>
         <router-link to="/about"><i class="iconfont icon-guanyu"></i>使用说明</router-link>

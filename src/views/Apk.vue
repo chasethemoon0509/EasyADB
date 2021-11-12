@@ -1,6 +1,35 @@
 <template>
   <div class="apk-container">
-      apk
+    <!-- 头部 -->
+      <div class="apk-header">
+        <p>对设备中的应用进行操作</p>
+        <button class="refresh-app-list">刷新应用列表</button>
+      </div>
+      <!-- 设备列表最外层盒子 -->
+      <div class="device-list">
+      <!-- 应用表头 -->
+        <div class="list-header">
+          <div class="package-name-th">包名
+            <div class="search-container">
+              <i class="iconfont icon-sousuo" id="search"></i>
+              <input type="search" placeholder="搜索" class="search-input">
+            </div>
+            
+          </div>
+          <div class="app-version-th">版本</div>
+          <div class="app-oprate-th">操作</div>
+        </div>
+      <!-- 列表主体 -->
+        <div class="list-body">
+          <div class="listItem" v-for="(item, index) in deviceArr" :key="index">
+            <p class="app-version">{{ item.status }}</p>
+            <p class="package-name">{{ item.version }}</p>
+            <p class="app-oprate"><button class="connect" @click="connectDevice(item.serial)">连接</button></p>
+          </div>
+        </div>
+      <!-- 暂无设备提示 -->
+      <p class="no-device-title">暂 无 应 用</p>
+    </div>
   </div>
 </template>
 
@@ -11,9 +40,102 @@ export default {
 </script>
 
 <style>
+/* 最外层盒子 */
 .apk-container {
   width: 100%;
   height: 100%;
   background-color: rgb(39, 44, 60);
+}
+.apk-header {
+  width: 650px;
+  margin: 30px auto;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  color: rgb(204, 204, 204);
+  font-size: 20px;
+}
+/* 刷新列表按钮 */
+.refresh-app-list {
+  padding: 5px 0;
+  width: 100px;
+  background-color: rgb(33, 202, 120);
+  border: none;
+  cursor: pointer;
+  color: white;
+}
+/* 设备列表 */
+.device-list {
+  width: 650px;
+  height: 400px;
+  margin: 30px auto;
+  /* border: solid 2px red; */
+  display: flex;
+  flex-direction: column;
+}
+/* 列表头部 */
+.list-header {
+  width: 650px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: solid 2px rgb(66, 76, 104);
+  border-bottom: solid 2px rgb(66, 76, 104);
+  color: rgb(204, 204, 204);
+  text-align: center;
+}
+/* 系统版本表头 */
+.app-version-th {
+  width: 10%;
+  border-right: solid 1px rgb(66, 76, 104);
+}
+/* 包名表头 */
+.package-name-th {
+  width: 50%;
+  border-right: solid 1px rgb(66, 76, 104);
+  display: flex;
+  justify-content: center;
+}
+/* 操作表头 */
+.app-oprate-th {
+  width: 40%;
+}
+/* 应用版本单元格 */
+.app-version {
+  width: 10%;
+}
+/* 应用包名单元格 */
+.package-name {
+  width: 50%;
+}
+/* 操作单元格 */
+.app-oprate {
+  width: 40%;
+}
+/* 搜索功能最外层盒子 */
+.search-container {
+  margin-left: 30px;
+  display: flex;
+  color: rgb(204, 204, 204);
+  border-radius: 10px;
+  background-color: rgb(66, 76, 104);
+}
+/* 搜索框样式 */
+.search-input {
+  margin-top: 1px;
+  height: 90%;
+  width: 80%;
+  outline: none;
+  background-color: rgb(66, 76, 104);
+  border: none;
+  color: rgb(204, 204, 204);
+  text-indent: 5px;
+}
+/* 搜索按钮的样式 */
+#search {
+  margin-left: 5px;
+  color: rgb(204, 204, 204);
+  cursor: pointer;
 }
 </style>
