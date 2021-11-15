@@ -1,6 +1,7 @@
 import request from "./request"
 
 
+
 // 获取设备信息接口
 const getDevInfo = function () {
     return request.get("/dev_info")

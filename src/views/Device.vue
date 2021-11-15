@@ -28,14 +28,19 @@
       </div>
       <!-- 暂无设备提示 -->
       <p class="no-device-title">暂 无 设 备</p>
+      <Dialog :message="`你好`" :isShow="isShow"></Dialog>
     </div>
   </div>
 </template>
 
 <script>
 import allApi from "../utils/api"
+import Dialog from "../components/Dialog.vue"
 
 export default {
+  components: {
+    Dialog
+  },
   data () {
     return {
       // 设备数量
@@ -47,7 +52,8 @@ export default {
       // 弹窗文字
       deviceListTips: "",
       // 当前连接的设备名
-      currentDeviceName: ""
+      currentDeviceName: "",
+      isShow: true
     }
   },
   methods: {
