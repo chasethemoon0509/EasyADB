@@ -26,9 +26,10 @@
           <p class="oprate"><button class="connect" @click="connectDevice(item.serial)">连接</button></p>
         </div>
       </div>
+      <button @click="test">点击</button>
       <!-- 暂无设备提示 -->
       <p class="no-device-title">暂 无 设 备</p>
-      <Dialog :message="`你好`" :isShow="isShow"></Dialog>
+      <Dialog :message="message" :isShow="isShow"></Dialog>
     </div>
   </div>
 </template>
@@ -53,10 +54,15 @@ export default {
       deviceListTips: "",
       // 当前连接的设备名
       currentDeviceName: "",
+      message: "",
       isShow: true
     }
   },
   methods: {
+    test () {
+        this.message = "位置错误"
+        this.isShow = true
+    },
     // 刷新设备列表方法
     async refreshList () {
       // 初始化设备信息数组和设备数量
@@ -78,12 +84,13 @@ export default {
         console.log(res.data.data);
       } else {
         this.deviceListTips = "未知错误,请重试"
+        this.message = "位置错误"
       }
-      // 弹窗
-      this.$dialog.alert({
-        confirmButtonText: "确 定",
-        message: this.deviceListTips,
-      })
+      // // 弹窗
+      // this.$dialog.alert({
+      //   confirmButtonText: "确 定",
+      //   message: this.deviceListTips,
+      // })
     }, // 刷新设备列表方法结束
     // 连接设备
     async connectDevice (serial) {

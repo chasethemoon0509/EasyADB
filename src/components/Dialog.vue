@@ -8,12 +8,17 @@
 
 <script>
 export default {
-  props: ["message", "isShow"],
-  data() {
-    return {
-      show: false,
+  props: {
+    message: {
+      type: String,
+      default: ""
+    },
+    isShow: {
+      type: Boolean,
+      default: false
     }
-  },
+  }
+
 }
 </script>
 
