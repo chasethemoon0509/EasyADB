@@ -13,49 +13,36 @@
     </div>
     <!-- adb 服务按钮外层盒子 -->
     <div class="adb-serve">
-        <button @click="startADB">启动ADB服务</button>
+        <button @click="sADB">启动ADB服务</button>
         <button @click="stopADB">停止ADB服务</button>
     </div>
   </div>
 </template>
 
 <script>
-import allApi from "../utils/api"
+// 导入命令方法模块
+const { eS } = require("../utils/cmd")
+// 创建 eS 类的实例
+const es = new eS()
 
 export default {
-  data () {
-    return {
-      // 弹窗信息
-      adbServerTips: ""
-    }
-  },
   methods: {
     // 启动 adb 服务方法开始
-    async startADB () {
-        const res = await allApi.adbStart()
-        if (res.data.data == 1) {
-          this.adbServerTips = "启动成功"
-        } else {
-          this.adbServerTips = "未知错误,请重试"
-        }
+    sADB () {
+        let result = es.startADB()
         // 弹窗
         this.$dialog.alert({
           confirmButtonText: "确 定",
-          message: this.adbServerTips,
+          message: result,
         })
     },// 启动 adb 服务方法结束
     // 停止 adb 服务方法开始
-    async stopADB () {
-        const res = await allApi.adbStop()
-        if (res.data.data == 1) {
-          this.adbServerTips = "停止成功"
-        } else {
-          this.adbServerTips = "未知错误,请重试"
-        }
+    stopADB () {
+        let result = es.killADB()
         // 弹窗
         this.$dialog.alert({
           confirmButtonText: "确 定",
-          message: this.adbServerTips,
+          message: result,
         })
     },   // 停止 adb 服务方法结束
   },
