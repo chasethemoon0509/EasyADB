@@ -10,20 +10,26 @@
     <div class="device-list">
       <!-- 设备列表头 -->
       <div class="list-header">
-        <div class="device-name-th">设备(数量: {{ deviceCount }})</div>
+        <div class="device-serial-th">设备(数量: {{ deviceCount }})</div>
         <div class="status-th">状态</div>
         <div class="android-version-th">系统</div>
         <div class="company-th">厂商</div>
+        <div class="device-model-th">型号</div>
         <div class="oprate-th">操作</div>
       </div>
       <!-- 列表主体 -->
       <div class="list-body">
         <div class="listItem" v-for="(item, index) in deviceArr" :key="index">
-          <p class="device-name">{{ item.serial }}</p>
+          <p class="device-serial">{{ item.serial }}</p>
           <p class="status">{{ item.status }}</p>
           <p class="android-version">{{ item.version }}</p>
           <p class="company">{{ item.brand }}</p>
-          <p class="oprate"><button class="connect" @click="connectDevice(item.serial)">连接</button></p>
+          <p class="device-model">{{ item.model }}</p>
+          <!-- 连接按钮盒子 -->
+          <div class="connect-container"> 
+            <p class="oprate"><button class="connect" @click="usbConnect(item.serial)">连接</button></p>
+            <p class="oprate"><button class="connect" @click="remoteConnect(item.serial)">连接</button></p>
+          </div>
         </div>
       </div>
       <!-- 暂无设备提示 -->
@@ -33,7 +39,11 @@
 </template>
 
 <script>
-import allApi from "../utils/api"
+// 导入命令方法模块
+const { eS } = require("../utils/cmd")
+// 创建 eS 类的实例
+const es = new eS()
+
 
 export default {
   data () {
@@ -42,61 +52,58 @@ export default {
       deviceCount: 0,
       // 设备信息数组
       deviceArr: [],
-      // 当前连接设备数量
-      currentConnect: "",
-      // 弹窗文字
-      deviceListTips: "",
       // 当前连接的设备名
       currentDeviceName: "",
     }
   },
   methods: {
     // 刷新设备列表方法
-    async refreshList () {
-      // 初始化设备信息数组和设备数量
-      this.deviceArr = []
-      this.deviceCount = 0
-      // 列表主体
-      let list = document.querySelector(".list-body")
-      // 无设备提醒文字
-      let nodevice = document.querySelector(".no-device-title")
-      const res = await allApi.getDevInfo()
-      if (res.data.data.length == 0) {
-        this.deviceListTips = "暂无设备,请保证设备已连接电脑"
-      } else if(res.data.data.length > 0) {
+    refreshList () {
+      // 定义提示语变量
+      let getDeviceMsg = ""
+      // 判断长度，若长度为 0 则表示无设备
+      if (es.getBaseInfo().length == 0) {
+        getDeviceMsg = "暂无设备"
+      } else {
+        // 初始化设备信息数组和设备数量
+        this.deviceArr = es.getBaseInfo()
+        this.deviceCount = es.getBaseInfo().length
+        // 显示列表主体
+        let list = document.querySelector(".list-body")
+        // 隐藏无设备提醒文字
+        let nodevice = document.querySelector(".no-device-title")
         list.style.display = "flex"
         nodevice.style.display = "none"
-        this.deviceArr = res.data.data
-        this.deviceCount = res.data.data.length
-        this.deviceListTips = "获取成功"
-        console.log(res.data.data);
-      } else {
-        this.deviceListTips = "未知错误,请重试"
+        getDeviceMsg = "获取成功"
       }
       // 弹窗
       this.$dialog.alert({
         confirmButtonText: "确 定",
-        message: this.deviceListTips,
+        message: getDeviceMsg,
       })
     }, // 刷新设备列表方法结束
-    // 连接设备
-    async connectDevice (serial) {
-      console.log(serial);
-      const res = await allApi.connect(serial)
-      if (res.data.data == 1) {
-        this.deviceListTips = "连接成功"
-        this.currentDeviceName = serial
-      } else if (res.data.data == 0) {
-        this.deviceListTips = "连接失败,请重试"
+    // usb 连接设备
+    usbConnect (serial) {
+      // 调用连接设备的方法
+      let result = es.connect(serial)
+      // 连接设备的提示语
+      let usbConnectMsg = ""
+      if (result === "") {
+        usbConnectMsg = "未知错误,请刷新重试"
       } else {
-        this.deviceListTips = "未知错误,请重试"
+        this.currentDeviceName = serial
+        usbConnectMsg = "连接成功"
       }
       // 弹窗
       this.$dialog.alert({
         confirmButtonText: "确 定",
-        message: this.deviceListTips,
+        message: usbConnectMsg,
       })
-    },// 连接设备方法结束
+    },// usb 连接设备方法结束
+    // 远程连接设备方法开始
+    remoteConnect () {
+
+    },// 远程连接设备方法开始
   },
 }
 </script>
@@ -149,25 +156,29 @@ export default {
   color: rgb(204, 204, 204);
   text-align: center;
 }
-/* 设备名表头 */
-.device-name-th {
-  width: 30%;
-  border-right: solid 1px rgb(66, 76, 104);
-}
-/* 系统版本表头 */
-.android-version-th {
-  width: 10%;
-  border-right: solid 1px rgb(66, 76, 104);
-
-}
-/* 厂商表头 */
-.company-th {
-  width: 20%;
+/* 设备码表头 */
+.device-serial-th {
+  width: 25%;
   border-right: solid 1px rgb(66, 76, 104);
 }
 /* 状态表头 */
 .status-th {
-  width: 20%;
+  width: 10%;
+  border-right: solid 1px rgb(66, 76, 104);
+}
+/* 厂商表头 */
+.company-th {
+  width: 15%;
+  border-right: solid 1px rgb(66, 76, 104);
+}
+/* 设备版本表头 */
+.android-version-th {
+  width: 15%;
+  border-right: solid 1px rgb(66, 76, 104);
+}
+/* 设备型号表头 */
+.device-model-th {
+  width: 15%;
   border-right: solid 1px rgb(66, 76, 104);
 }
 /* 操作表头 */
@@ -182,6 +193,12 @@ export default {
   flex-direction: column;
   color: rgb(204, 204, 204);
   overflow-y: scroll;
+  font-size: 13px;
+}
+/* 连接按钮外层盒子 */
+.connect-container {
+  display: flex;
+  justify-content: space-between;
 }
 /* 每一行 */
 .listItem {
@@ -199,21 +216,25 @@ export default {
   text-align: center;
   line-height: 50px;
 }
-/* 设备名单元格 */
-.device-name {
-  width: 30%;
+/* 设备码单元格 */
+.device-serial {
+  width: 25%;
 }
 /* 设备状态单元格 */
 .status {
-  width: 20%;
+  width: 10%;
 }
-/* 设备厂商单元格 */
+/* 厂商单元格 */
 .company {
-  width: 20%;
+  width: 15%;
 }
 /* 设备版本单元格 */
 .android-version {
-  width: 10%;
+  width: 15%;
+}
+/* 设备型号 */
+.device-model {
+  width: 15%;
 }
 /* 操作单元格 */
 .oprate {
@@ -221,7 +242,7 @@ export default {
 }
 /* 连接按钮 */
 .connect {
-  width: 60px;
+  width: 50px;
   height: 30px;
   border: none;
   cursor: pointer;

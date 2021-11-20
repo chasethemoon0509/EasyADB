@@ -1,4 +1,5 @@
-const { execSync } = require("child_process")
+const { execSync,exec } = require("child_process")
+
 
 class eS {
     constructor () {
@@ -9,7 +10,6 @@ class eS {
     base (cmdStr) {
         return execSync(`cd ./public/scrcpy && ${cmdStr}`).toString()
     }
-
     // 获取设备号和状态方法
     getSerialStatus () {
         // deviceAll 存放所有的设信息
@@ -34,11 +34,37 @@ class eS {
         for (let i = 0; i < baseInfo.length; i++) {
             baseInfo[i]["version"] = this.base(`adb -s ${baseInfo[i]["serial"]} shell getprop ro.build.version.release`).replace("\r\n", "")
             baseInfo[i]["brand"] = this.base(`adb -s ${baseInfo[i]["serial"]} shell getprop ro.product.brand`).replace("\r\n", "")
-            baseInfo[i]["name"] = this.base(`adb -s ${baseInfo[i]["serial"]} shell getprop ro.product.name`).replace("\r\n", "")
+            baseInfo[i]["model"] = this.base(`adb -s ${baseInfo[i]["serial"]} shell getprop ro.product.model`).replace("\r\n", "")
         }
         return baseInfo
     }
-
+    // 检查设备是否还存在
+    checkDeviceExist (serial) {
+        let result = this.getBaseInfo()
+        for (let i = 0; i < result.length; i++) {
+            let isExist = result[i]["serial"].includes(serial)
+            if (isExist) {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+    // 连接
+    connect(serial) {
+        let isExist = this.checkDeviceExist(serial)
+        if (isExist == true) {
+            // let result = this.base(`scrcpy --serial ${serial}`)
+            let result = exec(`cd ./public/scrcpy && scrcpy --serial ${serial}`, (err, stdout, stdin) => {
+                console.log(err);
+                console.log(stdout);
+                console.log(stdin);
+            })
+            return result
+        } else {
+            return ""
+        }
+    }
     // 启动 adb 服务
     startADB () {
         let result = this.base("adb start-server")
@@ -48,7 +74,6 @@ class eS {
            return result  
         }
     }
-
     // 关闭 adb 服务
     killADB () {
         let result = this.base("adb start-server")
@@ -58,6 +83,12 @@ class eS {
            return result     
         }
     }
+    // 返回第三方应用
+    getPackage3 () {
+        return this.base("adb shell pm list packages -3").toString().replaceAll("package:", "").split("\r\n")
+    }
+
+    
 
 }
 
